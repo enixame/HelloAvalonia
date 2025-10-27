@@ -1,0 +1,219 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:HelloAvalonia.ViewModels"
+             xmlns:converters="using:HelloAvalonia.Converters"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
+             x:Class="HelloAvalonia.Views.ClientDataGridControl"
+             x:DataType="vm:MainWindowViewModel">
+    
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+    
+    <UserControl.Resources>
+        <converters:BoolToExpanderIconConverter x:Key="ExpanderIconConverter"/>
+    </UserControl.Resources>
+    
+    <UserControl.Styles>
+        <!-- Styles pour les DataGrid headers -->
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="Background" Value="#2C3E50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <!-- Styles pour les lignes alternées -->
+        <Style Selector="DataGridRow:nth-child(even)">
+            <Setter Property="Background" Value="#F8F9FA"/>
+        </Style>
+        
+        <Style Selector="DataGridRow:nth-child(odd)">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <!-- Style pour survol -->
+        <Style Selector="DataGridRow:pointerover /template/ Rectangle#BackgroundRectangle">
+            <Setter Property="Fill" Value="#E3F2FD"/>
+        </Style>
+
+        <!-- Style pour ligne sélectionnée -->
+        <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+            <Setter Property="Fill" Value="#BBDEFB"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,*" Margin="20">
+        <!-- En-tête -->
+        <Border Grid.Row="0" 
+                Background="#34495E" 
+                CornerRadius="8" 
+                Padding="20"
+                Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="📋 Gestion des Clients" 
+                          FontSize="24" 
+                          FontWeight="Bold" 
+                          Foreground="White"/>
+                <TextBlock Text="Liste hiérarchique des clients et de leurs adresses" 
+                          FontSize="14" 
+                          Foreground="#BDC3C7" 
+                          Margin="0,5,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Barre de recherche -->
+        <Border Grid.Row="1" 
+                Background="White" 
+                BorderBrush="#BDC3C7" 
+                BorderThickness="1" 
+                CornerRadius="6" 
+                Padding="12,10"
+                Margin="0,0,0,15">
+            <Border.Styles>
+                <Style Selector="Border:pointerover">
+                    <Setter Property="BorderBrush" Value="#3498DB"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Style>
+                <Style Selector="Border:focus-within">
+                    <Setter Property="BorderBrush" Value="#2980B9"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="Background" Value="#F8FCFF"/>
+                </Style>
+            </Border.Styles>
+            
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                <!-- Icône de recherche -->
+                <TextBlock Grid.Column="0" 
+                          Text="🔍" 
+                          FontSize="18" 
+                          VerticalAlignment="Center"
+                          Margin="0,0,10,0"/>
+                
+                <!-- Champ de texte -->
+                <TextBox Grid.Column="1" 
+                         Text="{Binding SearchText, Mode=TwoWay}"
+                         Watermark="Rechercher par nom, email, ville, code postal..."
+                         BorderThickness="0"
+                         Background="Transparent"
+                         VerticalAlignment="Center"
+                         FontSize="14"
+                         Foreground="Black">
+                    <TextBox.Styles>
+                        <Style Selector="TextBox">
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Style>
+                        <Style Selector="TextBox /template/ TextBlock#PART_Watermark">
+                            <Setter Property="Foreground" Value="#95A5A6"/>
+                            <Setter Property="FontStyle" Value="Italic"/>
+                        </Style>
+                        <Style Selector="TextBox:focus /template/ TextBlock#PART_Watermark">
+                            <Setter Property="Foreground" Value="#BDC3C7"/>
+                        </Style>
+                    </TextBox.Styles>
+                </TextBox>
+                
+                <!-- Compteur de résultats -->
+                <TextBlock Grid.Column="2" 
+                          VerticalAlignment="Center"
+                          Margin="10,0"
+                          Foreground="#7F8C8D"
+                          FontSize="13">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} / {1} clients">
+                            <Binding Path="FilteredCount"/>
+                            <Binding Path="Clients.Count"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                
+                <!-- Bouton effacer -->
+                <Button Grid.Column="3" 
+                        Content="✕" 
+                        Command="{Binding ClearSearchCommand}"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Foreground="#E74C3C"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Padding="8,0"
+                        Cursor="Hand"
+                        IsVisible="{Binding SearchText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="#FADBD8"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- DataGrid -->
+        <Border Grid.Row="2" 
+                BorderBrush="#BDC3C7" 
+                BorderThickness="1" 
+                CornerRadius="8"
+                Background="White">
+            <DataGrid ItemsSource="{Binding Rows}"
+                      AutoGenerateColumns="False"
+                      GridLinesVisibility="Horizontal"
+                      IsReadOnly="True"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="False"
+                      SelectionMode="Single"
+                      HeadersVisibility="Column">
+                
+                <DataGrid.Columns>
+                    <!-- Colonne ID avec bouton expand/collapse -->
+                    <DataGridTemplateColumn Header="ID" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Button Grid.Column="0"
+                                            Content="{Binding IsExpanded, Converter={StaticResource ExpanderIconConverter}}"
+                                            Command="{Binding $parent[DataGrid].((vm:MainWindowViewModel)DataContext).ToggleExpandCommand}"
+                                            CommandParameter="{Binding}"
+                                            IsVisible="{Binding IsParent}"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Padding="0"
+                                            Margin="{Binding LeftMargin, StringFormat='\{0\},0,5,0'}"
+                                            Width="20"
+                                            Height="20"
+                                            FontSize="12"
+                                            Cursor="Hand"
+                                            VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" 
+                                              Text="{Binding Id}"
+                                              VerticalAlignment="Center"
+                                              Margin="{Binding LeftMargin, StringFormat='\{0\},0,0,0'}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Colonne Nom -->
+                    <DataGridTextColumn Header="Nom" 
+                                       Binding="{Binding Nom}" 
+                                       Width="*"
+                                       MinWidth="200"/>
+
+                    <!-- Colonne Email/Rue -->
+                    <DataGridTextColumn Header="Email / Rue" 
+                                       Binding="{Binding Email}" 
+                                       Width="*"
+                                       MinWidth="250"/>
+
+                    <!-- Colonne Détails -->
+                    <DataGridTextColumn Header="Détails" 
+                                       Binding="{Binding Details}" 
+                                       Width="*"
+                                       MinWidth="200"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>
