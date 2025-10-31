@@ -3,7 +3,7 @@ import json
 import random
 
 # Configuration
-NUM_CLIENTS = 10000  # Changez ce nombre pour tester différentes tailles
+NUM_CLIENTS = 100000  # Changez ce nombre pour tester différentes tailles
 
 prenoms = ["Jean", "Marie", "Pierre", "Sophie", "Luc", "Emma", "Thomas", "Julie", "Antoine", "Chloé",
            "Lucas", "Léa", "Hugo", "Camille", "Louis", "Sarah", "Arthur", "Laura", "Gabriel", "Manon"]

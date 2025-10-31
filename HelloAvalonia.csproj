@@ -26,4 +26,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaXamlCompile Include="**\*.axaml" />
+  </ItemGroup> 
+
 </Project>
