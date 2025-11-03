@@ -47,6 +47,64 @@
     </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,Auto,*" Margin="20">
+        <!-- Overlay de chargement -->
+        <Border Grid.RowSpan="3" 
+                Background="#DD000000"
+                IsVisible="{Binding IsLoading}"
+                ZIndex="999">
+            <StackPanel HorizontalAlignment="Center" 
+                       VerticalAlignment="Center"
+                       Spacing="25">
+                       
+                <!-- Spinner visuel simple -->
+                <Border Width="120" Height="120"
+                       Background="#2C3E50"
+                       CornerRadius="60"
+                       BoxShadow="0 8 30 5 #60000000">
+                    <Grid>
+                        <!-- Cercles concentriques -->
+                        <Ellipse Width="90" Height="90"
+                                Stroke="#3498DB"
+                                StrokeThickness="6"
+                                StrokeDashArray="20,15"
+                                Opacity="0.8"/>
+                        <Ellipse Width="70" Height="70"
+                                Stroke="#5DADE2"
+                                StrokeThickness="5"
+                                StrokeDashArray="15,10"
+                                Opacity="0.6"/>
+                        <Ellipse Width="50" Height="50"
+                                Stroke="#85C1E9"
+                                StrokeThickness="4"
+                                StrokeDashArray="10,8"
+                                Opacity="0.4"/>
+                        <!-- Centre -->
+                        <Ellipse Width="30" Height="30"
+                                Fill="#3498DB"
+                                Opacity="0.9"/>
+                    </Grid>
+                </Border>
+                
+                <!-- Message de chargement -->
+                <Border Background="#34495E"
+                       CornerRadius="8"
+                       Padding="25,15"
+                       BoxShadow="0 4 15 2 #40000000">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="⏳ Chargement en cours..."
+                                  FontSize="22"
+                                  FontWeight="Bold"
+                                  Foreground="White"
+                                  HorizontalAlignment="Center"/>
+                        <TextBlock Text="Préparation de l'affichage des clients"
+                                  FontSize="15"
+                                  Foreground="#BDC3C7"
+                                  HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+        
         <!-- En-tête -->
         <Border Grid.Row="0" 
                 Background="#34495E" 
