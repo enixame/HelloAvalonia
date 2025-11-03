@@ -1,12 +1,11 @@
 using Avalonia.Controls;
 
-namespace HelloAvalonia.Views
+namespace HelloAvalonia.Views;
+
+public partial class ClientDataGridControl : UserControl
 {
-    public partial class ClientDataGridControl : UserControl
+    public ClientDataGridControl()
     {
-        public ClientDataGridControl()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

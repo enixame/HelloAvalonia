@@ -6,10 +6,10 @@
              xmlns:converters="using:HelloAvalonia.Converters"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
              x:Class="HelloAvalonia.Views.ClientDataGridControl"
-             x:DataType="vm:MainWindowViewModel">
+             x:DataType="vm:ClientListViewModel">
     
     <Design.DataContext>
-        <vm:MainWindowViewModel/>
+        <vm:ClientListViewModel/>
     </Design.DataContext>
     
     <UserControl.Resources>
@@ -123,10 +123,7 @@
                           Foreground="#7F8C8D"
                           FontSize="13">
                     <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0} / {1} clients">
-                            <Binding Path="FilteredCount"/>
-                            <Binding Path="Clients.Count"/>
-                        </MultiBinding>
+                        <Binding Path="FilteredCount" StringFormat="{}{0} clients"/>
                     </TextBlock.Text>
                 </TextBlock>
                 
@@ -174,7 +171,7 @@
                                 <Grid ColumnDefinitions="Auto,*">
                                     <Button Grid.Column="0"
                                             Content="{Binding IsExpanded, Converter={StaticResource ExpanderIconConverter}}"
-                                            Command="{Binding $parent[DataGrid].((vm:MainWindowViewModel)DataContext).ToggleExpandCommand}"
+                                            Command="{Binding $parent[DataGrid].((vm:ClientListViewModel)DataContext).ToggleExpandCommand}"
                                             CommandParameter="{Binding}"
                                             IsVisible="{Binding IsParent}"
                                             Background="Transparent"
