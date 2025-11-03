@@ -4,13 +4,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="using:HelloAvalonia.Views"
         xmlns:vm="using:HelloAvalonia.ViewModels"
-        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
+        mc:Ignorable="d" d:DesignWidth="1600" d:DesignHeight="700"
         x:Class="HelloAvalonia.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Gestion Clients"
-        Width="1200" Height="700">
+        Width="1600" Height="700"
+        MinWidth="1200" MinHeight="600">
     
-    <!-- Binding au ViewModel composite -->
-    <views:ClientDataGridControl DataContext="{Binding ClientListViewModel}"/>
+    <!-- Layout avec panneau de détails à droite (masqué si aucune sélection) -->
+    <Grid ColumnDefinitions="*,Auto">
+        
+        <!-- Panneau principal avec la liste des clients -->
+        <views:ClientDataGridControl Grid.Column="0" 
+                                     DataContext="{Binding ClientListViewModel}"/>
+        
+        <!-- Panneau de détails à droite (visible uniquement si sélection) -->
+        <!-- Width="400" sera automatiquement masqué quand IsVisible=False -->
+        <views:ClientDetailPanel Grid.Column="1" 
+                                Width="400"
+                                DataContext="{Binding ClientListViewModel}"
+                                IsVisible="{Binding SelectedClient, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+        
+    </Grid>
     
 </Window>

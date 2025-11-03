@@ -15,7 +15,16 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow();
+            // Composition Root - Configuration de toutes les dépendances
+            var mainWindow = new MainWindow();
+            
+            // Configurer le ServiceLocator avec la fenêtre principale
+            Services.ServiceLocator.Instance.ConfigureDialogService(mainWindow);
+            
+            // Créer et assigner le ViewModel
+            mainWindow.DataContext = Services.ServiceLocator.Instance.CreateMainWindowViewModel();
+            
+            desktop.MainWindow = mainWindow;
         }
 
         base.OnFrameworkInitializationCompleted();

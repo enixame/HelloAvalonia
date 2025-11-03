@@ -4,7 +4,7 @@ using System.Windows.Input;
 namespace HelloAvalonia.ViewModels;
 
 /// <summary>
-/// Implémentation simple d'une commande pour MVVM
+/// Implémentation simple d'une commande pour MVVM (version générique)
 /// </summary>
 public class RelayCommand<T> : ICommand
 {
@@ -31,5 +31,36 @@ public class RelayCommand<T> : ICommand
     public void Execute(object? parameter)
     {
         _execute((T?)parameter);
+    }
+}
+
+/// <summary>
+/// Implémentation simple d'une commande pour MVVM (version non-générique)
+/// </summary>
+public class RelayCommand : ICommand
+{
+    private readonly Action _execute;
+    private readonly Func<bool>? _canExecute;
+
+    public RelayCommand(Action execute, Func<bool>? canExecute = null)
+    {
+        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        _canExecute = canExecute;
+    }
+
+    public event EventHandler? CanExecuteChanged
+    {
+        add { }
+        remove { }
+    }
+
+    public bool CanExecute(object? parameter)
+    {
+        return _canExecute == null || _canExecute();
+    }
+
+    public void Execute(object? parameter)
+    {
+        _execute();
     }
 }

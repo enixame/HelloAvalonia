@@ -1,0 +1,179 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="using:HelloAvalonia.Models"
+        xmlns:views="using:HelloAvalonia.Views"
+        x:Class="HelloAvalonia.Views.ClientDetailPopup"
+        x:DataType="views:ClientDetailPopup"
+        Title="Détails du client"
+        Width="700"
+        Height="600"
+        MinWidth="600"
+        MinHeight="500"
+        WindowStartupLocation="CenterOwner"
+        Background="#F8F9FA">
+    
+    <Border Padding="25">
+        <ScrollViewer>
+            <StackPanel Spacing="25">
+                
+                <!-- En-tête avec nom du client -->
+                <Border CornerRadius="10"
+                       Padding="30,25"
+                       BoxShadow="0 4 15 2 #40000000">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,100%" EndPoint="0%,0%">
+                            <GradientStop Color="#3498DB" Offset="0"/>
+                            <GradientStop Color="#2C3E50" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="10">
+                            <TextBlock Text="INFORMATIONS CLIENT"
+                                      FontSize="13"
+                                      FontWeight="Bold"
+                                      Foreground="#BDC3C7"
+                                      LetterSpacing="2"/>
+                            <TextBlock Text="{Binding Client.Nom}"
+                                      FontSize="32"
+                                      FontWeight="Bold"
+                                      Foreground="White"
+                                      TextWrapping="Wrap"/>
+                        </StackPanel>
+                        
+                        <!-- Badge ID -->
+                        <Border Grid.Column="1"
+                               Background="#E74C3C"
+                               CornerRadius="25"
+                               Padding="20,10"
+                               VerticalAlignment="Center"
+                               BoxShadow="0 2 10 0 #40000000">
+                            <TextBlock Text="{Binding Client.Id, StringFormat='ID: {0}'}"
+                                      FontSize="18"
+                                      FontWeight="Bold"
+                                      Foreground="White"/>
+                        </Border>
+                    </Grid>
+                </Border>
+                
+                <!-- Email -->
+                <Border Background="White"
+                       CornerRadius="10"
+                       Padding="25"
+                       BoxShadow="0 2 10 1 #20000000">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="📧 Email"
+                                  FontSize="16"
+                                  FontWeight="SemiBold"
+                                  Foreground="#34495E"/>
+                        <Border Background="#EBF5FB"
+                               CornerRadius="8"
+                               Padding="18,14">
+                            <TextBlock Text="{Binding Client.Email}"
+                                      FontSize="16"
+                                      Foreground="#2471A3"
+                                      FontWeight="Medium"
+                                      TextWrapping="Wrap"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+                
+                <!-- Adresses -->
+                <Border Background="White"
+                       CornerRadius="10"
+                       Padding="25"
+                       BoxShadow="0 2 10 1 #20000000">
+                    <StackPanel Spacing="15">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                      Text="📍 Adresses"
+                                      FontSize="18"
+                                      FontWeight="Bold"
+                                      Foreground="#34495E"/>
+                            <Border Grid.Column="1"
+                                   Background="#9B59B6"
+                                   CornerRadius="15"
+                                   Padding="12,6"
+                                   MinWidth="40"
+                                   HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Client.Adresses.Count}"
+                                          FontSize="16"
+                                          FontWeight="Bold"
+                                          Foreground="White"
+                                          HorizontalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                        
+                        <Separator Background="#E0E0E0" Height="2" Margin="0,5"/>
+                        
+                        <!-- Liste des adresses en badges/pastilles -->
+                        <ItemsControl ItemsSource="{Binding Client.Adresses}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="models:Adresse">
+                                    <Border CornerRadius="12"
+                                           Padding="20,15"
+                                           Margin="0,0,12,12"
+                                           MinWidth="180"
+                                           BoxShadow="0 4 12 0 #40000000">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                                <GradientStop Color="#F39C12" Offset="0"/>
+                                                <GradientStop Color="#E67E22" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <StackPanel Spacing="8">
+                                            <TextBlock Text="🏠"
+                                                      FontSize="20"
+                                                      HorizontalAlignment="Left"/>
+                                            <TextBlock Text="{Binding Rue}"
+                                                      FontSize="15"
+                                                      FontWeight="Bold"
+                                                      Foreground="White"
+                                                      TextWrapping="Wrap"
+                                                      MaxWidth="200"/>
+                                            <TextBlock FontSize="14"
+                                                      Foreground="White"
+                                                      Opacity="0.95"
+                                                      FontWeight="Medium">
+                                                <Run Text="{Binding CodePostal}"/>
+                                                <Run Text="{Binding Ville}"/>
+                                            </TextBlock>
+                                            <Border Background="#FFFFFF"
+                                                   CornerRadius="4"
+                                                   Padding="8,4"
+                                                   HorizontalAlignment="Left">
+                                                <TextBlock Text="{Binding Type}"
+                                                          FontSize="12"
+                                                          Foreground="#E67E22"
+                                                          FontWeight="Bold"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+                
+                <!-- Bouton fermer -->
+                <Button Content="✓ Fermer"
+                       HorizontalAlignment="Center"
+                       Padding="40,15"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       Background="#2ECC71"
+                       Foreground="White"
+                       CornerRadius="8"
+                       Cursor="Hand"
+                       Click="CloseButton_Click"/>
+                
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+    
+</Window>

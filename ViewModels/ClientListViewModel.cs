@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using HelloAvalonia.Models;
 using HelloAvalonia.Services;
 
 namespace HelloAvalonia.ViewModels;
@@ -16,21 +17,27 @@ public class ClientListViewModel : ViewModelBase
     private readonly ClientDataService _dataService;
     private readonly SearchService _searchService;
     private readonly Messenger _messenger;
+    private readonly IDialogService _dialogService;
 
     private ObservableCollection<DataGridRow> _rows = new();
     private string _searchText = string.Empty;
     private int _filteredCount;
     private System.Threading.Timer? _searchDebounceTimer;
     private bool _isLoading;
+    private DataGridRow? _selectedRow;
+    private Client? _selectedClient;
+    private bool _isDetailPopupOpen;
 
-    public ClientListViewModel(ClientDataService dataService, SearchService searchService, Messenger messenger)
+    public ClientListViewModel(ClientDataService dataService, SearchService searchService, Messenger messenger, IDialogService dialogService)
     {
         _dataService = dataService;
         _searchService = searchService;
         _messenger = messenger;
+        _dialogService = dialogService;
 
         ToggleExpandCommand = new RelayCommand<DataGridRow>(ToggleExpand);
         ClearSearchCommand = new RelayCommand<object>(_ => SearchText = string.Empty);
+        ShowClientDetailPopupCommand = new RelayCommand(ShowClientDetailPopup, CanShowClientDetailPopup);
 
         // S'abonner aux messages
         _messenger.Subscribe<DataLoadedMessage>(OnDataLoaded);
@@ -89,12 +96,46 @@ public class ClientListViewModel : ViewModelBase
         set => SetProperty(ref _isLoading, value);
     }
 
+    /// <summary>
+    /// Ligne sélectionnée dans le DataGrid
+    /// </summary>
+    public DataGridRow? SelectedRow
+    {
+        get => _selectedRow;
+        set
+        {
+            if (SetProperty(ref _selectedRow, value))
+            {
+                UpdateSelectedClient();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Client sélectionné (pour affichage des détails)
+    /// </summary>
+    public Client? SelectedClient
+    {
+        get => _selectedClient;
+        set => SetProperty(ref _selectedClient, value);
+    }
+
+    /// <summary>
+    /// Indique si la popup de détails est ouverte
+    /// </summary>
+    public bool IsDetailPopupOpen
+    {
+        get => _isDetailPopupOpen;
+        set => SetProperty(ref _isDetailPopupOpen, value);
+    }
+
     #endregion
 
     #region Commands
 
     public ICommand ToggleExpandCommand { get; }
     public ICommand ClearSearchCommand { get; }
+    public ICommand ShowClientDetailPopupCommand { get; }
 
     #endregion
 
@@ -238,6 +279,56 @@ public class ClientListViewModel : ViewModelBase
                 Rows.Remove(child);
             }
         }
+    }
+
+    /// <summary>
+    /// Met à jour le client sélectionné en fonction de la ligne sélectionnée
+    /// </summary>
+    private void UpdateSelectedClient()
+    {
+        if (SelectedRow == null)
+        {
+            SelectedClient = null;
+            return;
+        }
+
+        // Si c'est un client parent, prendre directement
+        if (SelectedRow.IsParent && SelectedRow.Tag is Client client)
+        {
+            SelectedClient = client;
+        }
+        // Si c'est une adresse enfant, trouver le client parent
+        else if (!SelectedRow.IsParent && SelectedRow.Tag is Adresse)
+        {
+            // Trouver le parent dans les lignes
+            var parentRow = Rows.FirstOrDefault(r => 
+                r.IsParent && 
+                r.Children.Contains(SelectedRow));
+            
+            if (parentRow?.Tag is Client parentClient)
+            {
+                SelectedClient = parentClient;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Vérifie si on peut afficher la popup de détails
+    /// </summary>
+    private bool CanShowClientDetailPopup()
+    {
+        return SelectedClient != null;
+    }
+
+    /// <summary>
+    /// Affiche la popup de détails du client sélectionné
+    /// </summary>
+    private async void ShowClientDetailPopup()
+    {
+        if (SelectedClient is not Client client)
+            return;
+
+        await _dialogService.ShowClientDetailsAsync(client);
     }
 
     #endregion

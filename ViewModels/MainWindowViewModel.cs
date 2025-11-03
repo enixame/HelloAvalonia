@@ -17,17 +17,22 @@ public class MainWindowViewModel : ViewModelBase
     private bool _isInitialized;
     private string _statusMessage = "Initialisation...";
 
-    public MainWindowViewModel()
+    /// <summary>
+    /// Constructeur avec injection de dépendances
+    /// </summary>
+    public MainWindowViewModel(
+        ClientDataService dataService,
+        SearchService searchService,
+        Messenger messenger,
+        ClientListViewModel clientListViewModel)
     {
         Console.WriteLine("MainWindowViewModel créé");
 
-        // Initialiser les services (Dependency Injection manuelle)
-        _dataService = new ClientDataService();
-        _searchService = new SearchService();
-        _messenger = Messenger.Default;
-
-        // Créer les ViewModels composites
-        ClientListViewModel = new ClientListViewModel(_dataService, _searchService, _messenger);
+        // Injection de dépendances
+        _dataService = dataService ?? throw new ArgumentNullException(nameof(dataService));
+        _searchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
+        _messenger = messenger ?? throw new ArgumentNullException(nameof(messenger));
+        ClientListViewModel = clientListViewModel ?? throw new ArgumentNullException(nameof(clientListViewModel));
 
         // S'abonner aux événements
         _messenger.Subscribe<DataLoadedMessage>(OnDataLoaded);
@@ -63,6 +68,8 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     #endregion
+
+
 
     #region Initialization
 

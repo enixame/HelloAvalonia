@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:HelloAvalonia.ViewModels"
              xmlns:converters="using:HelloAvalonia.Converters"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
              x:Class="HelloAvalonia.Views.ClientDataGridControl"
              x:DataType="vm:ClientListViewModel">
@@ -213,6 +215,7 @@
                 CornerRadius="8"
                 Background="White">
             <DataGrid ItemsSource="{Binding Rows}"
+                      SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
                       AutoGenerateColumns="False"
                       GridLinesVisibility="Horizontal"
                       IsReadOnly="True"
@@ -220,6 +223,12 @@
                       CanUserSortColumns="False"
                       SelectionMode="Single"
                       HeadersVisibility="Column">
+                
+                <i:Interaction.Behaviors>
+                    <ia:EventTriggerBehavior EventName="DoubleTapped">
+                        <ia:InvokeCommandAction Command="{Binding ShowClientDetailPopupCommand}"/>
+                    </ia:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
                 
                 <DataGrid.Columns>
                     <!-- Colonne ID avec bouton expand/collapse -->
