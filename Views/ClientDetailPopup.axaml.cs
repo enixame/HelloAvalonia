@@ -11,6 +11,7 @@ public partial class ClientDetailPopup : Window
     public ClientDetailPopup()
     {
         InitializeComponent();
+        
     }
 
     public ClientDetailPopup(Client client) : this()
